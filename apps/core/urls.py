@@ -1,0 +1,9 @@
+from django.urls import path
+from apps.core import views
+
+urlpatterns = [
+    path("prayertime/", views.PrayerTimeAPI.as_view(), name="prayertime"),
+    path("qibla-direction/", views.QiblaDirectionAPI.as_view(), name="qibla-direction"),
+    path("quran-sunnah/search/", views.SearchQuranAndSunnahAPI.as_view(), name="quran-sunnah-search"),
+    path("on-boarding-screens/", views.OnBoardingScreenAPI.as_view(), name="on-boarding-api"),
+] 
