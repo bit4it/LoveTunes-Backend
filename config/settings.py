@@ -117,7 +117,7 @@ AUTH_USER_MODEL = 'accounts.CustomUser'
 
 
 STATIC_URL = "static/"
-STATIC_ROOT = os.path.join(BASE_DIR, 'static_cdn/')
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_build', "static")
 STATICFILES_DIRS = [
     BASE_DIR / "static",
     "/var/www/static/",
