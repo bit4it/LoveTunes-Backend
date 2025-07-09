@@ -6,8 +6,8 @@ User = get_user_model()
 
 class ListeningSession(models.Model):
     session_id = models.CharField(max_length=132, default=UniqueIdGenerator.generate_listening_session_id)
-    creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='created_sessions')
-    participants = models.ManyToManyField(User, related_name='joined_sessions')
+    creator = models.CharField(max_length=255)
+    participants = models.CharField(max_length=255)
     current_song_id = models.CharField(max_length=100)
     is_active = models.BooleanField(default=True)
     playback_position = models.IntegerField(default=0) # second needs to be update when song is playing.

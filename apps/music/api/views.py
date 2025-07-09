@@ -4,7 +4,6 @@ from apps.music.services.music_api import MusicAPIManager
 from rest_framework import serializers
 from tools.exceptions import CustomAPIException
 from apps.music.models import ListeningSession
-from authentication.firebase import FirebaseAuthentication
 from rest_framework import status
 from apps.music.services.listening_session import ListeningSessionManager
 from apps.music.api.serializers import ListeningSessionSerializer
@@ -80,8 +79,6 @@ class SearchAllAPI(APIView):
         return Response(data=data)
 
 class StartListeningSessionAPI(APIView):
-    authentication_classes = [FirebaseAuthentication]
-
     def post(self, request):
         user = request.user
         manager = ListeningSessionManager()
@@ -90,7 +87,6 @@ class StartListeningSessionAPI(APIView):
         return Response({"data": serializer.data}, status=status.HTTP_201_CREATED)
 
 class JoinListeningSessionAPI(APIView):
-    authentication_classes = [FirebaseAuthentication]
 
     class InputSerializer(serializers.Serializer):
         session_id = serializers.CharField(required=True)
@@ -116,8 +112,6 @@ class JoinListeningSessionAPI(APIView):
 
 
 class LeaveListeningSessionAPI(APIView):
-    authentication_classes = [FirebaseAuthentication]
-
     class InputSerializer(serializers.Serializer):
         session_id = serializers.CharField(required=True)
 
