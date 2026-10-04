@@ -4,7 +4,6 @@ certifi
 cffi
 charset-normalizer
 click
-cryptography
 h11
 httpcore
 httpx
@@ -30,3 +29,5 @@ django-cors-headers
 gunicorn
 djangorestframework-simplejwt
 drf-spectacular
+redis
+pycryptodome
