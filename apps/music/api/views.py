@@ -6,14 +6,41 @@ from tools.exceptions import CustomAPIException
 from apps.music.models import ListeningSession
 from rest_framework import status
 from apps.music.services.listening_session import ListeningSessionManager
-from apps.music.api.serializers import ListeningSessionSerializer
+from apps.music.api.serializers import ListeningSessionSerializer, AlbumSerializer, RadioSerializer, ChartSerializer, PlaylistSerializer, TrendingSerializer
 from tools.http import get_request_data
 
 class HomePageAPI(APIView):
     def get(self, request):
         manager = MusicAPIManager()
         data = manager.get_home_page_data()
-        return Response(data=data)
+        trending_albums = data.get("new_trending", [])
+
+
+        trending = data.get("new_trending", [])
+        trending_serializer = TrendingSerializer(trending, many=True)
+
+        new_albums = data.get("new_albums", [])
+        album_serilizer = AlbumSerializer(new_albums, many=True)
+
+        top_playlist = data.get("top_playlists", [])
+        top_playlist_serializer = PlaylistSerializer(top_playlist, many=True)
+
+        charts = data.get("charts", [])
+        charts_serializer = ChartSerializer(charts, many=True)
+
+        radio = data.get("radio", [])
+        radio_serilizer = RadioSerializer(radio, many=True)
+
+        response = {
+            "trending_albums": trending_serializer.data,
+            "new_albums": album_serilizer.data,
+            "top_playlists": top_playlist_serializer.data,
+            "charts": charts_serializer.data,
+            "raido": radio_serilizer.data
+        }
+        return Response(data=response)
+        # return Response(data=trending_albums)
+
     
 class TrendingSearch(APIView):
     def get(self, request):
