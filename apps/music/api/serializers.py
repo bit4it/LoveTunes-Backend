@@ -99,7 +99,6 @@ class SongSerializer(serializers.Serializer):
         if not encrypted_url:
             return ""
 
-        # TODO: decrypt encrypted_url here
         playable_url = self.decrypt_url(encrypted_url)
 
         return playable_url
