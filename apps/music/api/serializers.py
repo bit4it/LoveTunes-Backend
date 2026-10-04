@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from apps.music.models import ListeningSession
-from apps.accounts.api.serializers import BasicUserSerializer
+from apps.accounts.api.serializers import UserSerializer
 
 class ArtistSerializer(serializers.Serializer):
     id = serializers.CharField()
@@ -31,8 +31,8 @@ class AlbumSerializer(serializers.Serializer):
 
 
 class ListeningSessionSerializer(serializers.ModelSerializer):
-    creator = BasicUserSerializer()
-    participants = BasicUserSerializer(many=True)
+    creator = UserSerializer()
+    participants = UserSerializer(many=True)
     
     class Meta:
         model = ListeningSession
