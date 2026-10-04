@@ -18,6 +18,8 @@ class AlbumSerializer(serializers.Serializer):
     type = serializers.CharField()
     perma_url = serializers.URLField()
     image = serializers.URLField()
+    best_image = serializers.SerializerMethodField()
+
     language = serializers.CharField()
     explicit_content = serializers.CharField()
 
@@ -43,6 +45,11 @@ class AlbumSerializer(serializers.Serializer):
     )
 
 
+    def get_best_image(self, obj):
+        image_url = obj.get("image")
+
+        return image_url.replace("150x150", "500x500")
+
 
 
 class SongArtistSerializer(serializers.Serializer):
@@ -58,6 +65,7 @@ class SongSerializer(serializers.Serializer):
     type = serializers.CharField()
     perma_url = serializers.CharField()
     image = serializers.CharField()
+    best_image = serializers.SerializerMethodField()
     language = serializers.CharField(default="")
     year = serializers.CharField(default="")
     play_count = serializers.CharField(default="0")
@@ -101,7 +109,14 @@ class SongSerializer(serializers.Serializer):
 
         playable_url = self.decrypt_url(encrypted_url)
 
+        playable_url = playable_url.replace("_96.mp4", "_320.mp4")
+
         return playable_url
+
+    def get_best_image(self, obj):
+        image_url = obj.get("image")
+
+        return image_url.replace("150x150", "500x500")
 
     def decrypt_url(self, encrypted_url):
         return decrypt(encrypted_url)

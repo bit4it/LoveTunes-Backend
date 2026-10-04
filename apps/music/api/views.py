@@ -6,7 +6,7 @@ from tools.exceptions import CustomAPIException
 from apps.music.models import ListeningSession
 from rest_framework import status
 from apps.music.services.listening_session import ListeningSessionManager
-from apps.music.api.serializers import ListeningSessionSerializer, AlbumSerializer, RadioSerializer, ChartSerializer, PlaylistSerializer, TrendingSerializer
+from apps.music.api.serializers import ListeningSessionSerializer, AlbumSerializer, RadioSerializer, ChartSerializer, PlaylistSerializer, TrendingSerializer, SongSerializer
 from tools.http import get_request_data
 
 class HomePageAPI(APIView):
@@ -32,7 +32,7 @@ class HomePageAPI(APIView):
         radio_serilizer = RadioSerializer(radio, many=True)
 
         response = {
-            "trending_albums": trending_serializer.data,
+            "trending": trending_serializer.data,
             "new_albums": album_serilizer.data,
             "top_playlists": top_playlist_serializer.data,
             "charts": charts_serializer.data,
@@ -104,6 +104,29 @@ class SearchAllAPI(APIView):
         manager = MusicAPIManager()
         data = manager.get_home_page_data()
         return Response(data=data)
+
+
+class SearchSongAPI(APIView):
+    class InputSerializer(serializers.Serializer):
+            query = serializers.CharField(required=True)
+
+    def get(self, request, *args, **kwargs):
+        request_data = get_request_data(request=request, **kwargs)
+
+        serializer = self.InputSerializer(data=request_data)
+        try:
+            serializer.is_valid(raise_exception=True)
+        except Exception as e:
+            raise CustomAPIException(detail=f"MissingFeild Error {e}")
+
+        query = serializer.data["query"]
+        
+        manager = MusicAPIManager()
+        data = manager.search_songs_by_query(query)
+
+        song_serializer = SongSerializer(data["results"], many=True)
+
+        return Response(data=song_serializer.data)
 
 class StartListeningSessionAPI(APIView):
     def post(self, request):

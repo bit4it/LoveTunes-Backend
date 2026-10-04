@@ -39,6 +39,8 @@ class MusicAPIManager:
         response = requests.get(url=url)
         data = response.json()
         return data
+
+    
       
 
     def get_home_page_data(self):
@@ -51,6 +53,11 @@ class MusicAPIManager:
     
     def get_album_details(self, album_id: str):
         params = f"{self.endpoints['albumDetails']}&cc=in&albumid={album_id}"
+        data = self.get_response(params=params)
+        return data
+
+    def search_songs_by_query(self, query: str):
+        params = f"{self.endpoints['getResults']}&cc=in&q={query}"
         data = self.get_response(params=params)
         return data
     
