@@ -2,12 +2,14 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from apps.music.services.music_api import MusicAPIManager
 from rest_framework import serializers
+from rest_framework.permissions import IsAuthenticated
+from django.shortcuts import get_object_or_404
 from authentication.jwt import CustomJwtAuthentication
 from tools.exceptions import CustomAPIException
-from apps.music.models import ListeningSession
+from apps.music.models import ListeningSession, Playlist
 from rest_framework import status
 from apps.music.services.listening_session import ListeningSessionManager
-from apps.music.api.serializers import ListeningSessionSerializer, AlbumSerializer, RadioSerializer, ChartSerializer, PlaylistSerializer, TrendingSerializer, SongSerializer
+from apps.music.api.serializers import ListeningSessionSerializer, AlbumSerializer, RadioSerializer, ChartSerializer, PlaylistSerializer, TrendingSerializer, SongSerializer, UserPlaylistSerializer
 from tools.http import get_request_data
 
 class HomePageAPI(APIView):
@@ -82,6 +84,35 @@ class PlaylistDetailAPI(APIView):
         manager = MusicAPIManager()
         data = manager.get_playlist_details(playlist_id=playlist_id)
         return Response(data=data)
+
+
+class UserPlaylistAPI(APIView):
+    authentication_classes = [CustomJwtAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        serializer = UserPlaylistSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        playlist = serializer.save(user=request.user)
+        return Response(
+            UserPlaylistSerializer(playlist).data,
+            status=status.HTTP_201_CREATED,
+        )
+
+    def put(self, request, playlist_id):
+        return self._update_playlist(request, playlist_id, partial=False)
+
+    def patch(self, request, playlist_id):
+        return self._update_playlist(request, playlist_id, partial=True)
+
+    def delete(self, request, playlist_id):
+        playlist = get_object_or_404(
+            Playlist,
+            pk=playlist_id,
+            user=request.user,
+        )
+        playlist.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
     
 class SongDetailAPI(APIView):
 

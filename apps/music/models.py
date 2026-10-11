@@ -9,6 +9,64 @@ from django.utils import timezone
 
 
 User = get_user_model()
+class Album(models.Model):
+    provider_id = models.CharField(max_length=100, unique=True)
+    title = models.CharField(max_length=255)
+    artist = models.CharField(max_length=255, blank=True, default="")
+    image_url = models.URLField(max_length=500, blank=True, default="")
+    release_date = models.DateField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["title"]
+
+    def __str__(self):
+        return self.title
+
+
+class Song(models.Model):
+    provider_id = models.CharField(max_length=100, unique=True)
+    title = models.CharField(max_length=255)
+    album = models.ForeignKey(
+        Album,
+        on_delete=models.SET_NULL,
+        related_name="songs",
+        null=True,
+        blank=True,
+    )
+    artist = models.CharField(max_length=255, blank=True, default="")
+    duration = models.PositiveIntegerField(default=0)
+    audio_url = models.URLField(max_length=1000, blank=True, default="")
+    image_url = models.URLField(max_length=500, blank=True, default="")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["title"]
+
+    def __str__(self):
+        return self.title
+
+
+class Playlist(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="playlists",
+    )
+    title = models.CharField(max_length=255)
+    description = models.TextField(blank=True, default="")
+    songs = models.ManyToManyField(Song, related_name="playlists", blank=True)
+    is_public = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return self.title
 
 
 class ListeningSession(models.Model):

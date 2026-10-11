@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from apps.music.models import ListeningSession
+from apps.music.models import ListeningSession, Playlist, Song
 from apps.accounts.api.serializers import UserSerializer
 from apps.music.utils import decrypt
 
@@ -221,3 +221,24 @@ class ListeningSessionSerializer(serializers.ModelSerializer):
     class Meta:
         model = ListeningSession
         fields = ['session_id', 'creator', 'participants', 'current_song_id', 'playback_position']
+
+
+class UserPlaylistSerializer(serializers.ModelSerializer):
+    songs = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=Song.objects.all(),
+        required=False,
+    )
+
+    class Meta:
+        model = Playlist
+        fields = [
+            "id",
+            "title",
+            "description",
+            "songs",
+            "is_public",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = ["id", "created_at", "updated_at"]
