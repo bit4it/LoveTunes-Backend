@@ -2,6 +2,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from apps.music.services.music_api import MusicAPIManager
 from rest_framework import serializers
+from authentication.jwt import CustomJwtAuthentication
 from tools.exceptions import CustomAPIException
 from apps.music.models import ListeningSession
 from rest_framework import status
@@ -129,6 +130,8 @@ class SearchSongAPI(APIView):
         return Response(data=song_serializer.data)
 
 class StartListeningSessionAPI(APIView):
+    authentication_classes = [CustomJwtAuthentication]
+    
     def post(self, request):
         user = request.user
         manager = ListeningSessionManager()
@@ -137,6 +140,7 @@ class StartListeningSessionAPI(APIView):
         return Response({"data": serializer.data}, status=status.HTTP_201_CREATED)
 
 class JoinListeningSessionAPI(APIView):
+    authentication_classes = [CustomJwtAuthentication]
 
     class InputSerializer(serializers.Serializer):
         session_id = serializers.CharField(required=True)
@@ -162,6 +166,8 @@ class JoinListeningSessionAPI(APIView):
 
 
 class LeaveListeningSessionAPI(APIView):
+    authentication_classes = [CustomJwtAuthentication]
+
     class InputSerializer(serializers.Serializer):
         session_id = serializers.CharField(required=True)
 

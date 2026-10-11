@@ -9,6 +9,7 @@ urlpatterns = [
     path("user/send-otp", views.SendVerificationOTPAPI.as_view(), name="send-otp"),
     path("user/register", views.RegisterAPI.as_view(), name="register"),
     path("user/login", views.LoginAPI.as_view(), name="login"),
+    path("user/profile", views.UserProfileAPI.as_view(), name="profile"),
     path("user/update", views.UpdateUserAPI.as_view(), name="update"),
     path('user/refresh', TokenRefreshView.as_view(), name='token_refresh')
 ]

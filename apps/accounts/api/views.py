@@ -7,7 +7,7 @@ from tools.exceptions import CustomAPIException
 from apps.accounts.services import CustomUserService
 from apps.accounts.models import CustomUser
 from rest_framework.permissions import IsAuthenticated
-from rest_framework_simplejwt.authentication import JWTAuthentication
+from authentication.jwt import CustomJwtAuthentication
 
 logger = logging.getLogger('django')
 
@@ -15,8 +15,13 @@ logger = logging.getLogger('django')
 class RegisterAPI(APIView):
     class InputSerializer(serializers.Serializer):
         email = serializers.EmailField(required=True, max_length=255)
-        first_name = serializers.CharField(max_length=50, default="")
-        last_name = serializers.CharField(max_length=50, default="")
+        first_name = serializers.CharField(max_length=50, default="", allow_blank=True)
+        last_name = serializers.CharField(
+            max_length=50,
+            required=False,
+            default="",
+            allow_blank=True,
+        )
         password = serializers.CharField(required=True)
         otp = serializers.CharField(required=True)
 
@@ -27,7 +32,6 @@ class RegisterAPI(APIView):
             serializer.is_valid(raise_exception=True)
         except Exception as e:
             raise CustomAPIException(detail=str(e), error_code="MissingFieldError")
-        
         user_manager = CustomUserService()
 
         if not user_manager.verify_otp(email=serializer.data["email"], 
@@ -74,9 +78,17 @@ class SendVerificationOTPAPI(APIView):
         user_manager.send_verification_code(serializer.data["email"])
 
         return Response({"message": "OTP sent successfully! OTP will expire in 5 minutes"})
+
+class UserProfileAPI(APIView):
+    authentication_classes = [CustomJwtAuthentication]
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request, *args,  **kwargs):
+        user_serializer = UserSerializer(request.user)
+        return Response(user_serializer.data)
         
 class UpdateUserAPI(APIView):
-    authentication_classes = [JWTAuthentication]
+    authentication_classes = [CustomJwtAuthentication]
     permission_classes = [IsAuthenticated]
     class InputSerializer(serializers.Serializer):
         first_name = serializers.CharField(max_length=50, default="")

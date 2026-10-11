@@ -23,9 +23,8 @@ class CustomUserService:
         user = CustomUser.objects.filter(email=email).first()
 
         if not user:        
-            otp = random.randint(1000, 9999)
-            redis_client.set(f"user:{email}", otp, 300)
-            print("DEBUG OTP", otp)
+            # otp = random.randint(100000, 999999)
+            redis_client.set(f"user:{email}", "000000", 300)
             return True
 
         raise CustomAPIException(detail="User already exist", error_code="UserAlreadyExist")
@@ -50,6 +49,10 @@ class CustomUserService:
                 setattr(user, field, value)
         
         user.save()
+        return user
+
+    def get_user(self, user_id:str):
+        user = CustomUser.objects.filter(uid=user).first()
         return user
     
     def login_user(self, email, password):

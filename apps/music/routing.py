@@ -3,5 +3,5 @@ from . import consumers
 print("urls")
 
 websocket_urlpatterns = [
-    path(r"ws/listening/session/<session_id>/", consumers.ChatConsumer.as_asgi()),
+    path(r"ws/listening/session/<session_id>/", consumers.ListeningRoomConsumer.as_asgi()),
 ]
